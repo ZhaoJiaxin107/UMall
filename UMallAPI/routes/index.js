@@ -56,11 +56,16 @@ router.get("/populargoods", async (req, res, next) => {
 // four plates
 router.get('/fourplates', async (req, res, next) => {
   // seek for third name from home and category_third
-  let sql = `SELECT * FROM home as h
-              JOIN category_third as ct
-              ON h.second_id = ct.second_id
-              ORDER BY rand()
-              LIMIT 4`
+  let sql = `SELECT h.id, h.second_id, 
+              CONCAT("${url}", h.image_url) AS image_url, 
+              h.big_title, h.small_title, 
+              ct.id, ct.third_id, 
+              ct.third_name, ct.second_id 
+             FROM home as h
+             JOIN category_third as ct
+             ON h.second_id = ct.second_id
+             ORDER BY rand()
+             LIMIT 4`
   let [err, result] = await db.query(sql)
 
   let promiseArr1 = [];
@@ -72,8 +77,8 @@ router.get('/fourplates', async (req, res, next) => {
     let second_id = item.second_id;
     let sql1 = `SELECT third_name FROM category_third 
       WHERE second_id = ${second_id} ORDER BY rand() LIMIT 4`
-    let sql2 = `SELECT goods_id, goods_name, image_url, goods_introduce
-      goods_manufacturer, goods_price, assem_price FROM goods_list WHERE second_id = ${second_id}
+    let sql2 = `SELECT goods_id, goods_name, CONCAT("${url}",image_url) AS image_url, 
+    goods_introduce, goods_manufacturer, goods_price, assem_price FROM goods_list WHERE second_id = ${second_id}
       ORDER BY rand() LIMIT 4`
     promiseArr1.push(db.query(sql1));
     promiseArr2.push(db.query(sql2));
