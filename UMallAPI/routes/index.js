@@ -53,7 +53,48 @@ router.get("/populargoods", async (req, res, next) => {
     next("popular goods failure")
   }
 })
+// four plates
+router.get('/fourplates', async (req, res, next) => {
+  // seek for third name from home and category_third
+  let sql = `SELECT * FROM home as h
+              JOIN category_third as ct
+              ON h.second_id = ct.second_id
+              ORDER BY rand()
+              LIMIT 4`
+  let [err, result] = await db.query(sql)
 
+  let promiseArr1 = [];
+  let promiseArr2 = [];
+  // 根据home表里的second_id，去category_third 
+  // 三级分类里面找对应的三级分类名称，随机拿四个
+  result.forEach(item => {
+    // console.log(item);
+    let second_id = item.second_id;
+    let sql1 = `SELECT third_name FROM category_third 
+      WHERE second_id = ${second_id} ORDER BY rand() LIMIT 4`
+    let sql2 = `SELECT goods_id, goods_name, image_url, goods_introduce
+      goods_manufacturer, goods_price, assem_price FROM goods_list WHERE second_id = ${second_id}
+      ORDER BY rand() LIMIT 4`
+    promiseArr1.push(db.query(sql1));
+    promiseArr2.push(db.query(sql2));
+    // console.log(promiseArr1);
+  })
+  // result1 get third_name
+  let result1 = await Promise.all(promiseArr1);
+  let result2 = await Promise.all(promiseArr2);
+  // res.send(result2);
+  result.forEach((item, index) => {
+    // add third classification for the result 
+    // console.log(item, index);
+    item.third_name = result1[index][1]
+    item.goods = result2[index][1]
+  })
+  if (!err) {
+    res.send(getMsg("Four Plates success", 200, result))
+  } else {
+    next('Four plates failure')
+  }
+})
 // guess what you like
 router.get("/guessgoods", async (req, res, next) => {
   let sql = `SELECT 
