@@ -11,10 +11,7 @@ router.get('/', function (req, res, next) {
 
 // get banner information
 router.get("/banner", async (req, res, next) => {
-  // 把banner的数据从数据库里，拿出来
-  // let  sql=`SELECT * FROM banner`
-  // let sql=`SELECT id,CONCAT("http://localhost:3000/",coverimg) AS coverimg FROM banner`
-
+  // get banner info from database
   let sql = `SELECT id,CONCAT("${url}",coverimg) AS coverimg FROM banner`
 
   let [err, result] = await db.query(sql)
@@ -26,7 +23,7 @@ router.get("/banner", async (req, res, next) => {
   }
 })
 
-// 一级分类  路由不同、查询语句不同
+// first category
 router.get("/firstcategory", async (req, res, next) => {
   let sql = `SELECT * FROM category_first`
   let [err, result] = await db.query(sql)
@@ -34,6 +31,44 @@ router.get("/firstcategory", async (req, res, next) => {
     res.send(getMsg("first category success", 200, result))
   } else {
     next("first category failure")
+  }
+})
+
+// popular goods
+router.get("/populargoods", async (req, res, next) => {
+  let sql = `SELECT CONCAT("${url}", gl.image_url) AS image_url, 
+              gl.goods_name,
+              SUM(ge.eval_start) as e_star
+              FROM goods_eval as ge
+              JOIN goods_list as gl
+              ON ge.goods_id=gl.goods_id
+              GROUP BY ge.goods_id 
+              ORDER BY e_star DESC    
+              LIMIT 8
+      `
+  let [err, result] = await db.query(sql)
+  if (!err) {
+    res.send(getMsg("popular goods success", 200, result))
+  } else {
+    next("popular goods failure")
+  }
+})
+
+// guess what you like
+router.get("/guessgoods", async (req, res, next) => {
+  let sql = `SELECT 
+              CONCAT("${url}",image_url) AS image_url,
+              goods_name,
+              goods_introduce,
+              goods_price
+          FROM  goods_list
+          ORDER BY RAND() 
+          LIMIT 15;`
+  let [err, result] = await db.query(sql)
+  if (!err) {
+    res.send(getMsg("guess goods success", 200, result))
+  } else {
+    next("guess goods failure")
   }
 })
 
