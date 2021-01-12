@@ -4,13 +4,14 @@ var { getMsg } = require('../utils/tool');
 var router = express.Router();
 let url = 'http://localhost:3000/'
 
+// product recomendation
 router.get("/recommend", async (req, res, next) => {
 
     let sql = `SELECT gl.goods_id, goods_name,
                CONCAT("${url}",image_url) AS image_url, 
                goods_introduce, goods_price
                 FROM win_location AS wl
-                JOIN goods_list AS gl
+                 JOIN goods_list AS gl
                 ON wl.goods_id = gl.goods_id
                 ORDER BY rand()
                 LIMIT 5`;
@@ -24,6 +25,7 @@ router.get("/recommend", async (req, res, next) => {
 // detail panel
 router.get('/:id', async (req, res, next) => {
     // receive dynamic router
+    
     let id = req.params.id
     let sql = `SELECT gl.goods_id, goods_name, 
                 CONCAT("${url}", image_url) AS image_url,
