@@ -91,4 +91,16 @@ FROM goods_eval AS ge
 JOIN member
 ON ge.uid = member.uid
 WHERE ge.goods_id = '1302465000000100001'
-LIMIT 1, 10
+LIMIT 1, 10;
+
+-- recommend
+SELECT * FROM goods_list;
+SELECT *  FROM win_location;
+
+SELECT gl.goods_id, goods_name,
+	   image_url, goods_introduce, goods_price
+FROM win_location AS wl
+JOIN goods_list AS gl
+ON wl.goods_id = gl.goods_id
+ORDER BY rand()
+LIMIT 5
