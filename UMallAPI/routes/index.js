@@ -68,7 +68,7 @@ router.get("/populargoods", async (req, res, next) => {
   let sql = `SELECT ge.goods_id,
               CONCAT("${url}", gl.image_url) AS image_url, 
               gl.goods_name,
-              SUM(ge.eval_start) as e_star
+              SUM(ge.eval_star) as e_star
               FROM goods_eval as ge
               JOIN goods_list as gl
               ON ge.goods_id=gl.goods_id

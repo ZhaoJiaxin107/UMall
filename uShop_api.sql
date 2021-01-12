@@ -76,4 +76,19 @@ JOIN goods_style AS gs
 ON gl.goods_id = gs.goods_id
 WHERE gl.goods_id = '1302045135030100001';
 
-SELECT * FROM goods_image
+SELECT * FROM goods_image;
+
+SELECT * FROM goods_eval;
+SELECT * FROM member;
+
+SELECT eval_id, goods_id,
+       ge.uid, style_name_id,
+       style_value_id, eval_text,
+       eval_star, create_time,
+       username,
+       head_photo_url
+FROM goods_eval AS ge
+JOIN member
+ON ge.uid = member.uid
+WHERE ge.goods_id = '1302465000000100001'
+LIMIT 1, 10

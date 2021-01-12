@@ -40,7 +40,34 @@ router.get('/:id', async (req, res, next) =>{
     }
 })
 
-
+// comment part
+// we can get all the evaluation information by goods_id
+// we can get username and avatar from uid
+// params: page and comment length
+router.get('/comment/:id', async(req, res, next) =>{
+    // receive dynamic router
+    let id = req.params.id
+    let {page = 1, length = 5} = req.query
+    console.log(req.query)
+    let start = (page - 1) * length;
+    let sql = `SELECT eval_id, goods_id,
+               ge.uid, style_name_id,
+               style_value_id, eval_text,
+               eval_star, create_time,
+               username,
+               CONCAT("${url}", head_photo_url) AS head_photo_url
+               FROM goods_eval AS ge
+               JOIN member
+               ON ge.uid = member.uid
+               WHERE ge.goods_id = ${id}
+               LIMIT ${start}, ${length}`
+    let [err, result] = await db.query(sql) 
+    if(!err){
+        res.send(getMsg('Comment success', 200, result))
+    }else{
+        next('Comment failure')
+    }
+})
 
 
 
