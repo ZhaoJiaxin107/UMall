@@ -6,6 +6,7 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var detailRouter = require('./routes/detail');
+var listRouter = require('./routes/list');
 var { getMsg } = require('./utils/tool');
 
 var app = express();
@@ -23,7 +24,7 @@ app.use('/image_source', express.static(path.join(__dirname, 'image_source')));
 
 app.use('/', indexRouter);
 app.use('/detail', detailRouter);
-
+app.use('/list', listRouter);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   res.send(getMsg('File Not Found', 404))
