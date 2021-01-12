@@ -109,3 +109,19 @@ SELECT * FROM category_first;
 SELECT * FROM category_second WHERE first_id = 339;
 
 SELECT * FROM category_third;
+SELECT * FROM category_third WHERE second_id = 628;
+
+-- 综合
+SELECT id, goods_id, third_id,
+       goods_name, image_url, goods_introduce,
+	   goods_manufacturer, goods_price, assem_price, new_status
+FROM goods_list WHERE third_id = 684 ORDER BY rand() LIMIT 1, 16;
+
+-- 新品
+SELECT * FROM goods_list WHERE third_id = 684 and new_status = 1 ORDER BY rand() LIMIT 1, 16;
+
+-- 价格排序
+SELECT * FROM goods_list WHERE third_id = 684 ORDER BY goods_price ASC LIMIT 1, 16;
+
+
+

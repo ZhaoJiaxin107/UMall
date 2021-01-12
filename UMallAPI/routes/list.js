@@ -38,4 +38,27 @@ router.get('/categorythird', async(req, res, next) =>{
         next('Third category failure')
     }
 })
+
+// goodlist, consider paging
+router.get('/goodslist', async (req, res, next) =>{
+    // get product based on third_id
+    let third_id = req.query.id
+    // pagination
+    let {page = 1, length = 16} = req.query
+    let start = (page - 1) * length;
+    let sql1 = `SELECT id, goods_id, 
+                third_id, goods_name, 
+                CONCAT("${url}", image_url) AS image_url, 
+                goods_introduce,goods_manufacturer, 
+                goods_price, assem_price, new_status
+                FROM goods_list WHERE third_id = ${third_id} 
+                ORDER BY rand() LIMIT ${start}, ${length}`
+    let [err, result] = await db.query(sql1);
+    if(!err){
+        res.send(getMsg('Goods list success', 200, result))
+    }else{
+        next('Goods list failure')
+    }
+})
+
 module.exports = router;
