@@ -36,7 +36,8 @@ router.get("/firstcategory", async (req, res, next) => {
 
 // popular goods
 router.get("/populargoods", async (req, res, next) => {
-  let sql = `SELECT CONCAT("${url}", gl.image_url) AS image_url, 
+  let sql = `SELECT ge.goods_id,
+              CONCAT("${url}", gl.image_url) AS image_url, 
               gl.goods_name,
               SUM(ge.eval_start) as e_star
               FROM goods_eval as ge
@@ -44,8 +45,7 @@ router.get("/populargoods", async (req, res, next) => {
               ON ge.goods_id=gl.goods_id
               GROUP BY ge.goods_id 
               ORDER BY e_star DESC    
-              LIMIT 8
-      `
+              LIMIT 8`
   let [err, result] = await db.query(sql)
   if (!err) {
     res.send(getMsg("popular goods success", 200, result))
@@ -65,7 +65,7 @@ router.get('/fourplates', async (req, res, next) => {
              JOIN category_third as ct
              ON h.second_id = ct.second_id
              ORDER BY rand()
-             LIMIT 4`
+             LIMIT 8`
   let [err, result] = await db.query(sql)
 
   let promiseArr1 = [];

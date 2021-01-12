@@ -17,7 +17,8 @@ SELECT * FROM category_third;
 SELECT * FROM category_second;
 SELECT * FROM category_first;
 
-SELECT * FROM home as h
+SELECT h.id, h.second_id, h.image_url, h.big_title, h.small_title, ct.id, ct.third_id, ct.third_name, ct.second_id 
+FROM home as h
               JOIN category_third as ct
               ON h.second_id = ct.second_id
               ORDER BY rand();
@@ -30,7 +31,11 @@ WHERE second_id = 295 ORDER BY rand() LIMIT 4;
 SELECT * FROM goods_list;
 SELECT goods_id, goods_name, image_url, goods_introduce
 goods_manufacturer, goods_price, assem_price FROM goods_list WHERE second_id = 622
-ORDER BY rand() LIMIT 4
+ORDER BY rand() LIMIT 4;
 
+
+USE u_shopping;
+SELECT * FROM flash_product;
+SELECT * FROM flash_sale; 
 
 
