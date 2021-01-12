@@ -103,4 +103,7 @@ FROM win_location AS wl
 JOIN goods_list AS gl
 ON wl.goods_id = gl.goods_id
 ORDER BY rand()
-LIMIT 5
+LIMIT 5;
+
+SELECT * FROM category_first;
+SELECT * FROM category_second WHERE first_id = 339;
