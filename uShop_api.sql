@@ -54,4 +54,26 @@ SELECT  fp.goods_id,
 FROM flash_product as fp
 JOIN goods_list as gl
 ON fp.goods_id = gl.goods_id
-WHERE fp.flash_id = '8015e8de-d52d-457d-86f4-6e0c129b1ad2'
+WHERE fp.flash_id = '8015e8de-d52d-457d-86f4-6e0c129b1ad2';
+
+SELECT * FROM goods_style;
+
+SELECT gl.goods_id, 
+		goods_name, 
+        image_url,
+        goods_introduce,
+        goods_manufacturer,
+        goods_price,
+        assem_price,
+        goods_detailed_information,
+        new_status,
+        style_name_id,
+        style_name,
+        style_value_id,
+        style_value
+FROM goods_list AS gl
+JOIN goods_style AS gs
+ON gl.goods_id = gs.goods_id
+WHERE gl.goods_id = '1302045135030100001';
+
+SELECT * FROM goods_image

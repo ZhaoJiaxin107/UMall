@@ -141,9 +141,9 @@ router.get("/guessgoods", async (req, res, next) => {
           LIMIT 15;`
   let [err, result] = await db.query(sql)
   if (!err) {
-    res.send(getMsg("guess goods success", 200, result))
+    res.send(getMsg("Guess goods success", 200, result))
   } else {
-    next("guess goods failure")
+    next("Guess goods failure")
   }
 })
 module.exports = router;
