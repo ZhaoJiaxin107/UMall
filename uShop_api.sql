@@ -35,7 +35,23 @@ ORDER BY rand() LIMIT 4;
 
 
 USE u_shopping;
+
 SELECT * FROM flash_product;
 SELECT * FROM flash_sale; 
+SELECT * FROM goods_list;
+-- 2021 01/12 12:00:00  2020 01/12 23:59:59
+UPDATE flash_sale SET begin_time ='1610424000000', end_time = '1610467199000' where id = 1;
+-- 2021 01/13 12:00:00  2020 01/13 23:59:59
+UPDATE flash_sale SET begin_time ='1610510400000', end_time = '1610553599000'  where id = 2;
 
+SELECT * FROM flash_sale WHERE begin_time <= '1610427121627' and end_time >='1610427121627';
 
+SELECT * FROM flash_product;
+SELECT  fp.goods_id, 
+		image_url,
+		goods_name, 
+		goods_price, assem_price
+FROM flash_product as fp
+JOIN goods_list as gl
+ON fp.goods_id = gl.goods_id
+WHERE fp.flash_id = '8015e8de-d52d-457d-86f4-6e0c129b1ad2'
