@@ -107,3 +107,5 @@ LIMIT 5;
 
 SELECT * FROM category_first;
 SELECT * FROM category_second WHERE first_id = 339;
+
+SELECT * FROM category_third;

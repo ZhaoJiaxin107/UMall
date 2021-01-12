@@ -27,4 +27,15 @@ router.get('/categorysecond', async(req, res, next) =>{
     }
 })
 
+router.get('/categorythird', async(req, res, next) =>{
+    // get third category
+    let second_id = req.query.id
+    let sql = `SELECT * FROM category_third WHERE second_id = ${second_id}`
+    let [err, result] = await db.query(sql)
+    if(!err){
+        res.send(getMsg('Third category success', 200, result))
+    }else{
+        next('Third category failure')
+    }
+})
 module.exports = router;
