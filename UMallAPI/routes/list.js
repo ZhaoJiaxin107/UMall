@@ -19,11 +19,11 @@ router.get('/hotsearch', async (req, res, next) => {
 // search by user
 router.get('/searchbyuser', async (req, res, next) => {
     // receive parameters and id(third_id) is necessary
-    let { searchtext='', page = 1, length = 5, orderBy = 1 } = req.query
+    let { searchtext='', page = 1, length = 5, orderby = 1 } = req.query
     let start = (page - 1) * length
     let orderStr = "", sort = "";
     // judge situation by orderby parameters
-    switch (orderBy) {
+    switch (orderby) {
         case "1":
             orderStr = `ORDER BY rand()`
             break;
@@ -59,6 +59,24 @@ router.get('/searchbyuser', async (req, res, next) => {
         totalPage,
         page,
         result
+    }
+    // judge searchtext, if it exists in the search table, count++
+    // else insert a new data
+    let sql2 = `SELECT * FROM search WHERE search_text = '${searchtext}'`
+    let [err2, result2] = await db.query(sql2)
+    // console.log(result2);
+    if(result2.length == 0){
+        // insert new value
+        // console.log('insert new value');
+        let sql3 = `INSERT INTO search(search_text, count) VALUES('${searchtext}', 1)`
+        let [err3] = await db.query(sql3)
+    }else{
+        // console.log('update count');
+        // update count
+        let searchCount = result2[0].count + 1;
+        // update count in search table
+        let sql4 = `UPDATE search SET count = ${searchCount} WHERE search_text = '${searchtext}'`
+        let [err4] = await db.query(sql4)
     }
     if (!err) {
         res.send(getMsg('Search by user success', 200, data))
@@ -121,11 +139,11 @@ router.get("/recommend", async (req, res, next) => {
 // goodlist, considering parameters in url
 router.get('/goodslist', async (req, res, next) => {
     // receive parameters and id(third_id) is necessary
-    let { id: third_id, page = 1, length = 5, orderBy = 1 } = req.query
+    let { id: third_id, page = 1, length = 5, orderby = 1 } = req.query
     let start = (page - 1) * length
     let orderStr = "", sort = "";
     // judge situation by orderby parameters
-    switch (orderBy) {
+    switch (orderby) {
         case "1":
             orderStr = `ORDER BY rand()`
             break;

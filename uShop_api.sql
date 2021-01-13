@@ -132,8 +132,18 @@ SELECT * FROM member;
 SELECT * FROM search;
 
 SELECT * FROM goods_list WHERE goods_name LIKE  '%秋衣%';
+SELECT COUNT(*) AS count FROM goods_list WHERE goods_name LIKE '%秋衣%';
+
+SELECT * FROM search WHERE search_text = '44';
+
 
 SELECT COUNT(*) AS count FROM goods_list WHERE third_id = 663;
+SELECT * FROM search WHERE search_text = '裤子';
+SELECT * FROM search; 
+SELECT * FROM goods_list;
+
+INSERT INTO search(search_text, count) VALUES ()
+
 
 
 
