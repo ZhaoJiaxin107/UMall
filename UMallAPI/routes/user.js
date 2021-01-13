@@ -2,7 +2,9 @@ var express = require('express');
 var db = require('../utils/db');
 var { getMsg } = require('../utils/tool');
 var router = express.Router();
-const svgCaptcha = require("svg-captcha")
+const svgCaptcha = require("svg-captcha");
+const md5 = require('md5');
+const { v4: uuid } = require('uuid');
 let url = 'http://localhost:3000/'
 
 router.post('/register', async function (req, res, next) {
@@ -31,6 +33,25 @@ router.post('/register', async function (req, res, next) {
         return
     }
 
+    let sql = `SELECT * FROM member WHERE username = '${username}'`
+    let [err, result] = await db.query(sql);
+    // console.log(result.length)
+    if(result.length > 0){
+        res.send('用户名已存在')
+        return
+    }
+
+    // add user information to member 
+    // Generate non duplicate UID
+    let uid = uuid()
+    // Password encryption
+    password = md5(password)
+    let head_photo_url = 'image_source/head_photo/girl_head_03.png'
+    let createdate = new Date().getTime()
+    console.log(uid, password, createdate)
+    let sql1 = `INSERT INTO member(uid, username, password, head_photo_url, createdate)
+    VALUES('${uid}','${username}','${password}','${head_photo_url}','${createdate}')`
+    let [err1] = await db.query(sql1)
     res.send('注册成功')
 
 

@@ -141,9 +141,9 @@ SELECT COUNT(*) AS count FROM goods_list WHERE third_id = 663;
 SELECT * FROM search WHERE search_text = '裤子';
 SELECT * FROM search; 
 SELECT * FROM goods_list;
+INSERT INTO search(search_text, count) VALUES('咖啡', 5);
 
-INSERT INTO search(search_text, count) VALUES ()
 
-
+SELECT * FROM member;
 
 
