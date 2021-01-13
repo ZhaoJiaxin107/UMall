@@ -59,12 +59,12 @@ router.get("/recommend", async (req, res, next) => {
 
 // goodlist, consider paging
 router.get('/goodslist/:id', async (req, res, next) => {
-    // get id
+    // get id, sort by different situation
     let id = req.params.id;
     // get product based on third_id
     let third_id = req.query.id
     // pagination
-    let { page = 1, length = 16 } = req.query
+    let { page = 1, length = 5 } = req.query
     let start = (page - 1) * length;
     let sql;
     switch (id) {
@@ -108,11 +108,35 @@ router.get('/goodslist/:id', async (req, res, next) => {
             break;
     }
     let [err, result] = await db.query(sql);
+    // Query for count and total page
+    let sql1 = `SELECT COUNT(*) AS count FROM goods_list WHERE third_id = ${third_id}`;
+    let [err1, result1] = await db.query(sql1)
+    let data = {
+        count: result1[0].count,
+        totalPage: Math.ceil(result1[0].count/length),
+        curPage: page,
+        result
+    }
     if (!err) {
-        res.send(getMsg('Goods list success', 200, result))
+        res.send(getMsg('Goods list success', 200, data))
     } else {
         next('Goods list failure')
     }
-})
-
+})  
+    /* 
+    {
+        "msg": "success",
+        "status": 200,
+        "data": {
+                count:count,
+                pages:20,
+                page:page
+                result:[
+                    {},
+                    {},
+                    {}
+                ]
+         }
+    }
+*/
 module.exports = router;

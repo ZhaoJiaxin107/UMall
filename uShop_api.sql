@@ -123,5 +123,9 @@ SELECT * FROM goods_list WHERE third_id = 684 and new_status = 1 ORDER BY rand()
 -- 价格排序
 SELECT * FROM goods_list WHERE third_id = 684 ORDER BY goods_price ASC LIMIT 1, 16;
 
+SELECT * FROM goods_list;
+
+SELECT COUNT(*) AS count FROM goods_list WHERE third_id = 663;
+
 
 
