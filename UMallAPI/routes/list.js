@@ -56,8 +56,46 @@ router.get("/recommend", async (req, res, next) => {
         next("Product recommendation failure")
     }
 })
+// goodlist, considering parameters in url
+router.get('/goodslist', async (req, res, next) => {
+    // receive parameters and id(third_id) is necessary
+    let { id: third_id, page = 1, length = 5, orderBy = 1} = req.query
+    let start = (page - 1) * length
+    let orderStr = "", sort = "";
+    // judge situation by orderby parameters
+    switch (orderBy) {
+        case "1":
+            orderStr = `ORDER BY rand()`
+            break;
+        case "2":
+            orderStr = `AND new_status = 1 ORDER BY rand()`
+            break;
+        case "3":
+            orderStr = `ORDER BY goods_price`
+            sort = `ASC`
+            break;
+        default:
+            orderStr = `ORDER BY rand()`
+            break;
+    }
+    let sql = `SELECT id, goods_id, 
+               third_id, goods_name, 
+               CONCAT("${url}", image_url) AS image_url, 
+               goods_introduce,goods_manufacturer, 
+               goods_price, assem_price, new_status
+               FROM goods_list WHERE third_id = ${third_id} 
+               ${orderStr} ${sort}
+               LIMIT ${start}, ${length}`
+    
+    let [err, result] = await db.query(sql)
+    if(!err){
+        res.send(getMsg('Goods list success', 200, result))
+    }else{
+        next('Goods list failure')
+    }
 
-// goodlist, consider paging
+})
+// goodlist, consider paging: search by router
 router.get('/goodslist/:id', async (req, res, next) => {
     // get id, sort by different situation
     let id = req.params.id;
@@ -113,7 +151,7 @@ router.get('/goodslist/:id', async (req, res, next) => {
     let [err1, result1] = await db.query(sql1)
     let data = {
         count: result1[0].count,
-        totalPage: Math.ceil(result1[0].count/length),
+        totalPage: Math.ceil(result1[0].count / length),
         curPage: page,
         result
     }
@@ -122,21 +160,24 @@ router.get('/goodslist/:id', async (req, res, next) => {
     } else {
         next('Goods list failure')
     }
-})  
-    /* 
-    {
-        "msg": "success",
-        "status": 200,
-        "data": {
-                count:count,
-                pages:20,
-                page:page
-                result:[
-                    {},
-                    {},
-                    {}
-                ]
-         }
-    }
+})
+/* 
+{
+    "msg": "success",
+    "status": 200,
+    "data": {
+            count:count,
+            pages:20,
+            page:page
+            result:[
+                {},
+                {},
+                {}
+            ]
+     }
+}
 */
+
+// goodslist order by different methods
+
 module.exports = router;
