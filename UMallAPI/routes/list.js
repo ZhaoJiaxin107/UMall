@@ -10,12 +10,61 @@ router.get('/hotsearch', async (req, res, next) => {
     let sql = `SELECT * FROM search ORDER BY count DESC LIMIT ${limit}`
     let [err, result] = await db.query(sql)
 
-    if(!err){
+    if (!err) {
         res.send(getMsg('Hot search success', 200, result))
-    }else{
+    } else {
         next('Hot search failure')
     }
-    
+})
+// search by user
+router.get('/searchbyuser', async (req, res, next) => {
+    // receive parameters and id(third_id) is necessary
+    let { searchtext='', page = 1, length = 5, orderBy = 1 } = req.query
+    let start = (page - 1) * length
+    let orderStr = "", sort = "";
+    // judge situation by orderby parameters
+    switch (orderBy) {
+        case "1":
+            orderStr = `ORDER BY rand()`
+            break;
+        case "2":
+            orderStr = `AND new_status = 1 ORDER BY rand()`
+            break;
+        case "3":
+            orderStr = `ORDER BY goods_price`
+            sort = `ASC`
+            break;
+        default:
+            orderStr = `ORDER BY rand()`
+            break;
+    }
+    let sql = `SELECT id, goods_id, 
+               third_id, goods_name, 
+               CONCAT("${url}", image_url) AS image_url, 
+               goods_introduce,goods_manufacturer, 
+               goods_price, assem_price, new_status
+               FROM goods_list WHERE goods_name LIKE '%${searchtext}%'
+               ${orderStr} ${sort}
+               LIMIT ${start}, ${length}`
+    let [err, result] = await db.query(sql)
+    // calculate the count of product and total page, add to the result
+    // query for the count of one product
+    let sql1 = `SELECT COUNT(*) AS count FROM goods_list WHERE goods_name LIKE '%${searchtext}%'`
+    let [err1, result1] = await db.query(sql1)
+    // add result to the data
+    let count = result1[0].count
+    let totalPage = Math.ceil(count / length)
+    let data = {
+        count,
+        totalPage,
+        page,
+        result
+    }
+    if (!err) {
+        res.send(getMsg('Search by user success', 200, data))
+    } else {
+        next('Search by user failure')
+    }
 })
 router.get('/categoryfirst', async (req, res, next) => {
     // get first category

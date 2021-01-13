@@ -125,6 +125,14 @@ SELECT * FROM goods_list WHERE third_id = 684 ORDER BY goods_price ASC LIMIT 1, 
 
 SELECT * FROM goods_list;
 
+SELECT * FROM search ORDER BY count DESC LIMIT 9;
+SELECT * FROM search ORDER BY count DESC LIMIT 9;
+
+SELECT * FROM member;
+SELECT * FROM search;
+
+SELECT * FROM goods_list WHERE goods_name LIKE  '%秋衣%';
+
 SELECT COUNT(*) AS count FROM goods_list WHERE third_id = 663;
 
 
