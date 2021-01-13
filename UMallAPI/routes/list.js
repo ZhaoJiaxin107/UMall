@@ -39,7 +39,25 @@ router.get('/categorythird', async (req, res, next) => {
     }
 })
 
-// default goodlist, consider paging
+// product recomendation
+router.get("/recommend", async (req, res, next) => {
+    let sql = `SELECT gl.goods_id, goods_name,
+               CONCAT("${url}",image_url) AS image_url, 
+               goods_introduce, goods_price
+                FROM win_location AS wl
+                 JOIN goods_list AS gl
+                ON wl.goods_id = gl.goods_id
+                ORDER BY rand()
+                LIMIT 5`;
+    let [err, result] = await db.query(sql)
+    if (!err) {
+        res.send(getMsg("Product recommendation success", 200, result))
+    } else {
+        next("Product recommendation failure")
+    }
+})
+
+// goodlist, consider paging
 router.get('/goodslist/:id', async (req, res, next) => {
     // get id
     let id = req.params.id;
