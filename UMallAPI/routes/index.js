@@ -6,8 +6,89 @@ let url = 'http://localhost:3000/'
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-  res.render('index', { title: 'Express' });
+  res.render('index', { title: 'United Mall' });
 });
+
+// hot search
+router.get('/hotsearch', async (req, res, next) => {
+  let { limit = 9 } = req.query
+  let sql = `SELECT * FROM search ORDER BY count DESC LIMIT ${limit}`
+  let [err, result] = await db.query(sql)
+
+  if (!err) {
+    res.send(getMsg('Hot search success', 200, result))
+  } else {
+    next('Hot search failure')
+  }
+})
+// search by user
+router.get('/searchbyuser', async (req, res, next) => {
+  // receive parameters and id(third_id) is necessary
+  let { searchtext = '', page = 1, length = 5, orderby = 1 } = req.query
+  let start = (page - 1) * length
+  let orderStr = "", sort = "";
+  // judge situation by orderby parameters
+  switch (orderby) {
+    case "1":
+      orderStr = `ORDER BY rand()`
+      break;
+    case "2":
+      orderStr = `AND new_status = 1 ORDER BY rand()`
+      break;
+    case "3":
+      orderStr = `ORDER BY goods_price`
+      sort = `ASC`
+      break;
+    default:
+      orderStr = `ORDER BY rand()`
+      break;
+  }
+  let sql = `SELECT id, goods_id, 
+             third_id, goods_name, 
+             CONCAT("${url}", image_url) AS image_url, 
+             goods_introduce,goods_manufacturer, 
+             goods_price, assem_price, new_status
+             FROM goods_list WHERE goods_name LIKE '%${searchtext}%'
+             ${orderStr} ${sort}
+             LIMIT ${start}, ${length}`
+  let [err, result] = await db.query(sql)
+  // calculate the count of product and total page, add to the result
+  // query for the count of one product
+  let sql1 = `SELECT COUNT(*) AS count FROM goods_list WHERE goods_name LIKE '%${searchtext}%'`
+  let [err1, result1] = await db.query(sql1)
+  // add result to the data
+  let count = result1[0].count
+  let totalPage = Math.ceil(count / length)
+  let data = {
+    count,
+    totalPage,
+    page,
+    result
+  }
+  // judge searchtext, if it exists in the search table, count++
+  // else insert a new data
+  let sql2 = `SELECT * FROM search WHERE search_text = '${searchtext}'`
+  let [err2, result2] = await db.query(sql2)
+  // console.log(result2);
+  if (result2.length == 0) {
+    // insert new value
+    // console.log('insert new value');
+    let sql3 = `INSERT INTO search(search_text, count) VALUES('${searchtext}', 1)`
+    let [err3] = await db.query(sql3)
+  } else {
+    // console.log('update count');
+    // update count
+    let searchCount = result2[0].count + 1;
+    // update count in search table
+    let sql4 = `UPDATE search SET count = ${searchCount} WHERE search_text = '${searchtext}'`
+    let [err4] = await db.query(sql4)
+  }
+  if (!err) {
+    res.send(getMsg('Search by user success', 200, data))
+  } else {
+    next('Search by user failure')
+  }
+})
 
 // get banner information
 router.get("/banner", async (req, res, next) => {

@@ -84,6 +84,7 @@ router.get('/searchbyuser', async (req, res, next) => {
         next('Search by user failure')
     }
 })
+
 router.get('/categoryfirst', async (req, res, next) => {
     // get first category
     let sql = `SELECT * FROM category_first`
