@@ -4,6 +4,19 @@ var { getMsg } = require('../utils/tool');
 var router = express.Router();
 let url = 'http://localhost:3000/'
 
+// hot search
+router.get('/hotsearch', async (req, res, next) => {
+    let { limit = 9 } = req.query
+    let sql = `SELECT * FROM search ORDER BY count DESC LIMIT ${limit}`
+    let [err, result] = await db.query(sql)
+
+    if(!err){
+        res.send(getMsg('Hot search success', 200, result))
+    }else{
+        next('Hot search failure')
+    }
+    
+})
 router.get('/categoryfirst', async (req, res, next) => {
     // get first category
     let sql = `SELECT * FROM category_first`
@@ -93,7 +106,7 @@ router.get('/goodslist', async (req, res, next) => {
     let [err1, result1] = await db.query(sql1)
     // add result to the data
     let count = result1[0].count
-    let totalPage = Math.ceil(count/length)
+    let totalPage = Math.ceil(count / length)
     let data = {
         count,
         totalPage,
@@ -105,10 +118,9 @@ router.get('/goodslist', async (req, res, next) => {
     } else {
         next('Goods list failure')
     }
-
 })
 // goodlist, consider paging: search by router
-router.get('/goodslist/:id', async (req, res, next) => {
+/* router.get('/goodslist/:id', async (req, res, next) => {
     // get id, sort by different situation
     let id = req.params.id;
     // get product based on third_id
@@ -172,7 +184,7 @@ router.get('/goodslist/:id', async (req, res, next) => {
     } else {
         next('Goods list failure')
     }
-})
+}) */
 /* 
 {
     "msg": "success",
@@ -190,6 +202,5 @@ router.get('/goodslist/:id', async (req, res, next) => {
 }
 */
 
-// goodslist order by different methods
 
 module.exports = router;
