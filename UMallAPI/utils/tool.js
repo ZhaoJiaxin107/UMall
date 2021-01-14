@@ -22,7 +22,7 @@ function setToken(user) {
 function getToken(token) {
     try {
         return jwt.verify(token, secret)
-    } catch (err) {
+    } catch (error) {
         console.log('Token expired or no token')
         return false
     }

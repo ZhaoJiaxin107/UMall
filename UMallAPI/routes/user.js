@@ -112,9 +112,41 @@ router.post('/login', async (req, res, next) => {
     let token = setToken(user)
     // Login success
     res.send(getMsg('Login success', 200, token))
-   
+
 })
 
+// 当访问个人中心的时候，前端需要传过来一个标识，
+// 标识着用户有没有登陆，如果有登陆，那么允许访问，
+// 如果没有登录，就提示用户先登录
+router.get('/personal', async (req, res, next) => {
+    // console.log(getToken(req.headers.authorization))
+    let user = getToken(req.headers.authorization)
+    if (!user) {
+        res.status(403).send('Please login in first')
+    }
+    else {
+        // console.log(user.username)
+        let username = user.username
+        let sql = `SELECT id, uid, username, password, 
+        CONCAT("${url}", head_photo_url) AS head_photo_url, 
+        createdate
+        FROM member WHERE username = '${username}'`
+        let [err, result] = await db.query(sql)
+        if(!err){
+            res.send(getMsg('Personal center success', 200, result))
+        }else{
+            next('Personal center failure')
+        }     
+    }
+    /* 
+        {
+            username: 'wbeilbbpx',
+            uid: '9dc74466-3101-11e9-850c-e0accb719100',
+            iat: 1610602966,
+            exp: 1610603026
+        }
+    */
+})
 router.get('/getcode', function (req, res, next) {
     let svgico = svgCaptcha.create({
         size: 4,
