@@ -1,15 +1,15 @@
 const jwt = require('jsonwebtoken');
 let secret = 'zjxzjx624553259'
-function getMsg(msg, status, data){
-    if(status == 200){
+function getMsg(msg, status, data) {
+    if (status == 200) {
         return { msg, status, data }
-    }else{
-        return { msg, status}
+    } else {
+        return { msg, status }
     }
-    
+
 }
 
-function setToken(user){
+function setToken(user) {
     return jwt.sign(
         user,
         secret,
@@ -19,10 +19,10 @@ function setToken(user){
     )
 }
 
-function getToken(token){
-    try{
+function getToken(token) {
+    try {
         return jwt.verify(token, secret)
-    }catch(err){
+    } catch (err) {
         console.log('Token expired or no token')
         return false
     }

@@ -1,6 +1,6 @@
 var express = require('express');
 var db = require('../utils/db');
-var { getMsg } = require('../utils/tool');
+var { getMsg, setToken, getToken } = require('../utils/tool');
 var router = express.Router();
 const svgCaptcha = require("svg-captcha");
 const md5 = require('md5');
@@ -104,8 +104,14 @@ router.post('/login', async (req, res, next) => {
         res.status(403).send('Username or password is not correct')
         return
     }
+    // User can login in, get token
+    let user = {
+        username: result1[0].username,
+        uid: result1[0].uid
+    }
+    let token = setToken(user)
     // Login success
-    res.send(getMsg('Login success', 200, result1))
+    res.send(getMsg('Login success', 200, token))
    
 })
 
