@@ -92,7 +92,11 @@ router.post('/login', async (req, res, next) => {
     }
     // only username and password matches, user can login in
     password = md5(password)
-    let sql1 = `SELECT * FROM member WHERE username = '${username}' AND password = '${password}'`
+    let sql1 = `SELECT id, uid, username, password, 
+                CONCAT("${url}", head_photo_url) AS head_photo_url, 
+                createdate
+                FROM member WHERE username = '${username}' 
+                AND password = '${password}'`
     let [err1, result1] = await db.query(sql1)
 
     // console.log(result1)
