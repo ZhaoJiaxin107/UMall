@@ -148,5 +148,7 @@ SELECT * FROM member;
 
 
 SELECT * FROM member;
+SELECT * FROM search;
+SELECT * FROM first_category;
 
 

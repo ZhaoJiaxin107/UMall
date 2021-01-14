@@ -7,11 +7,10 @@ username=jiaxin&password=123456&code=secb
 POST http://localhost:3000/user/login
 content-type:application/x-www-form-urlencoded
 
-username=wbeilbbpx3&password=111111&code=73p2
+username=xwzecwjvbygci&password=111111&code=kr5b
 ###
 GET http://localhost:3000/user/personal
-Authorization: yJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IndiZWlsYmJweCIsInVpZCI6IjlkYzc0NDY2LTMxMDEtMTFlOS04NTBjLWUwYWNjYjcxOTEwMCIsImlhdCI6MTYxMDYxMTg1OCwiZXhwIjoxNjEwNjExOTE4fQ.ioQDeNqAByh5o8klNEBE2XOFv7PlVIuAqPAcR8Dfr9Q
-
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Inh3emVjd2p2YnlnY2kiLCJ1aWQiOiI5ZGRmZTQ2Yi0zMTAxLTExZTktODc1ZC1lMGFjY2I3MTkxMDAiLCJpYXQiOjE2MTA2MTM5NTksImV4cCI6MTYxMDYxNDAxOX0.5bv_DBDF0jw8EJEESxiAlMeSu3bNTd4Tc8Boelrm57g
 
 ### 
 GET http://localhost:3000/user/getcode

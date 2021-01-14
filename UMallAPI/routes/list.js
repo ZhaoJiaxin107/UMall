@@ -99,7 +99,7 @@ router.get('/categoryfirst', async (req, res, next) => {
 })
 
 router.get('/categorysecond', async (req, res, next) => {
-    // get second category
+    // get second category, first_id is necessary
     let first_id = req.query.id
     let sql = `SELECT * FROM category_second WHERE first_id = ${first_id}`
     let [err, result] = await db.query(sql)
@@ -111,7 +111,7 @@ router.get('/categorysecond', async (req, res, next) => {
 })
 
 router.get('/categorythird', async (req, res, next) => {
-    // get third category
+    // get third category, second_id is necessary
     let second_id = req.query.id
     let sql = `SELECT * FROM category_third WHERE second_id = ${second_id}`
     let [err, result] = await db.query(sql)

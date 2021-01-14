@@ -25,7 +25,7 @@ router.get("/recommend", async (req, res, next) => {
 // detail panel
 router.get('/:id', async (req, res, next) => {
     // receive dynamic router
-    
+
     let id = req.params.id
     let sql = `SELECT gl.goods_id, goods_name, 
                 CONCAT("${url}", image_url) AS image_url,
