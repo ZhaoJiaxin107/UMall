@@ -1,3 +1,4 @@
+const e = require('express');
 var express = require('express');
 var db = require('../utils/db');
 var { getMsg } = require('../utils/tool');
@@ -126,10 +127,11 @@ router.get('/flashsale', async (req, res, next) => {
   let curTime = new Date('2021-01-12 13:00:00').getTime();
   let sql = `SELECT * FROM flash_sale WHERE begin_time <= ${curTime} and end_time >= ${curTime}`;
   let [err, result] = await db.query(sql);
-  let flash_id = result[0].flash_id;
+  if (!err && result.length > 0) {
+    let flash_id = result[0].flash_id;
 
-  // get goods information from goods_list based on flash_id and goods_id
-  let sql1 = `SELECT fp.goods_id, 
+    // get goods information from goods_list based on flash_id and goods_id
+    let sql1 = `SELECT fp.goods_id, 
                     CONCAT("${url}",image_url) AS image_url,
                     goods_name, 
                     goods_price, assem_price
@@ -139,16 +141,18 @@ router.get('/flashsale', async (req, res, next) => {
               WHERE fp.flash_id = "${flash_id}"
               ORDER BY rand()
               LIMIT 4`
-  let [err1, result1] = await db.query(sql1)
-  result[0].data = result1
-  if (!err) {
-    res.send(getMsg('Flash sale success', 200, result))
+    let [err1, result1] = await db.query(sql1)
+    if (!err1 && result1.length > 0) {
+      result[0].data = result1
+      res.send(getMsg('Flash sale success', 200, result))
+    } else {
+      next('Flash sale failure')
+    }
   } else {
     next('Flash sale failure')
   }
   // res.send(result);
 })
-
 
 // popular goods
 router.get("/populargoods", async (req, res, next) => {
