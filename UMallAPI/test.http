@@ -1,13 +1,13 @@
 POST http://localhost:3000/user/register
 content-type:application/x-www-form-urlencoded
 
-username=jiaxin&password=123456&code=ggwh
+username=jiaxin&password=123456&code=secb
 
 ###
 POST http://localhost:3000/user/login
 content-type:application/x-www-form-urlencoded
 
-username=jiaxinq&password=123456&code=ttxz
+username=wbeilbbpx3&password=111111&code=zrta
 
 ### 
 GET http://localhost:3000/user/getcode

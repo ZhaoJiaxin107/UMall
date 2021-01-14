@@ -85,8 +85,8 @@ router.post('/login', async (req, res, next) => {
     // judge whether the user exists
     let sql = `SELECT * FROM member WHERE username = '${username}'`
     let [err, result] = await db.query(sql);
-    if(result.length == 0){
-        console.log('Username not exists, please go to register')
+    if (result.length == 0) {
+        // console.log('Username not exists, please go to register')
         res.status(403).send('Username not exists, please go to register')
         return
     }
@@ -95,13 +95,14 @@ router.post('/login', async (req, res, next) => {
     let sql1 = `SELECT * FROM member WHERE username = '${username}' AND password = '${password}'`
     let [err1, result1] = await db.query(sql1)
 
-    console.log(result1)
-    if(result1.length == 0){
+    // console.log(result1)
+    if (result1.length == 0) {
         res.status(403).send('Username or password is not correct')
         return
     }
     // Login success
     res.send(getMsg('Login success', 200, result1))
+   
 })
 
 router.get('/getcode', function (req, res, next) {
