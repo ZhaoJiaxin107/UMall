@@ -40,19 +40,22 @@ router.get('/:id', async (req, res, next) => {
                ON gl.goods_id = gs.goods_id
                WHERE gl.goods_id = ${id}`
     let [err, result] = await db.query(sql)
-
-    // get rotation small images
-    let goods_id = result[0].goods_id
-    let sql1 = `SELECT id, 
+    if (!err && result.length > 0) {
+        // get rotation small images
+        let goods_id = result[0].goods_id
+        let sql1 = `SELECT id, 
                     CONCAT("${url}", file_name) AS filename,
                     goods_id 
                 FROM goods_image 
                 WHERE goods_id = ${goods_id}`
-    let [err1, result1] = await db.query(sql1)
-    result[0].filenames = result1
-    // res.send(result);
-    if (!err) {
-        res.send(getMsg('Detail panel success', 200, result))
+        let [err1, result1] = await db.query(sql1)
+        if (!err1) {
+            result[0].filenames = result1
+            // res.send(result);
+            res.send(getMsg('Detail panel success', 200, result))
+        } else {
+            next('Detail panel failure')
+        }
     } else {
         next('Detail panel failure')
     }
@@ -81,21 +84,25 @@ router.get('/comment/:id', async (req, res, next) => {
                WHERE ge.goods_id = ${id}
                LIMIT ${start}, ${length}`
     let [err, result] = await db.query(sql)
-    // calculate the count of comment of one product
-    let sql1 = `SELECT count(*) AS count FROM goods_eval WHERE goods_id = ${id}`
-    let [err1, result1] = await db.query(sql1)
-    // add result to the data
-    let count = result1[0].count
-    page = Number(page)
-    let totalPage = Math.ceil(count / length)
-    let data = {
-        count,
-        totalPage,
-        page,
-        result
-    }
-    if (!err) {
-        res.send(getMsg('Comment success', 200, data))
+    if (!err && result.length > 0) {
+        // calculate the count of comment of one product
+        let sql1 = `SELECT count(*) AS count FROM goods_eval WHERE goods_id = ${id}`
+        let [err1, result1] = await db.query(sql1)
+        // add result to the data
+        if (!err1) {
+            let count = result1[0].count
+            page = Number(page)
+            let totalPage = Math.ceil(count / length)
+            let data = {
+                count,
+                totalPage,
+                page,
+                result
+            }
+            res.send(getMsg('Comment success', 200, data))
+        } else {
+            next('Comment failure')
+        }
     } else {
         next('Comment failure')
     }
