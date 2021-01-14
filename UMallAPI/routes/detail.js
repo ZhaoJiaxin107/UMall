@@ -25,7 +25,7 @@ router.get("/recommend", async (req, res, next) => {
 // detail panel
 router.get('/:id', async (req, res, next) => {
     // receive dynamic router
-
+    // id represent goods_id 1301045088010100001
     let id = req.params.id
     let sql = `SELECT gl.goods_id, goods_name, 
                 CONCAT("${url}", image_url) AS image_url,
@@ -64,6 +64,7 @@ router.get('/:id', async (req, res, next) => {
 // params: page and comment length
 router.get('/comment/:id', async (req, res, next) => {
     // receive dynamic router
+    // id represent goods_id which is necessary
     let id = req.params.id
     let { page = 1, length = 5 } = req.query
     // console.log(req.query)
@@ -80,8 +81,21 @@ router.get('/comment/:id', async (req, res, next) => {
                WHERE ge.goods_id = ${id}
                LIMIT ${start}, ${length}`
     let [err, result] = await db.query(sql)
+    // calculate the count of comment of one product
+    let sql1 = `SELECT count(*) AS count FROM goods_eval WHERE goods_id = ${id}`
+    let [err1, result1] = await db.query(sql1)
+    // add result to the data
+    let count = result1[0].count
+    page = Number(page)
+    let totalPage = Math.ceil(count / length)
+    let data = {
+        count,
+        totalPage,
+        page,
+        result
+    }
     if (!err) {
-        res.send(getMsg('Comment success', 200, result))
+        res.send(getMsg('Comment success', 200, data))
     } else {
         next('Comment failure')
     }

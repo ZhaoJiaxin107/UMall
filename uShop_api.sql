@@ -149,6 +149,16 @@ SELECT * FROM member;
 
 SELECT * FROM member;
 SELECT * FROM search;
-SELECT * FROM first_category;
+SELECT * FROM category_first;
+SELECT * FROM category_second;
+SELECT * FROM category_third;
 
+SELECT * FROM goods_list;
+
+SELECT count(*) AS count
+               FROM goods_eval AS ge
+               JOIN member
+               ON ge.uid = member.uid
+               WHERE ge.goods_id = '1300905183110100001';
+SELECT count(*) AS count FROM goods_eval WHERE goods_id = '1300905183110100001'
 
