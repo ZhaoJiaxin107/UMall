@@ -132,11 +132,11 @@ router.get('/personal', async (req, res, next) => {
         createdate
         FROM member WHERE username = '${username}'`
         let [err, result] = await db.query(sql)
-        if(!err){
+        if (!err) {
             res.send(getMsg('Personal center success', 200, result))
-        }else{
+        } else {
             next('Personal center failure')
-        }     
+        }
     }
     /* 
         {
