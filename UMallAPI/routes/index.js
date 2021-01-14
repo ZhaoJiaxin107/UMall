@@ -55,38 +55,42 @@ router.get('/searchbyuser', async (req, res, next) => {
   let [err, result] = await db.query(sql)
   // calculate the count of product and total page, add to the result
   // query for the count of one product
-  let sql1 = `SELECT COUNT(*) AS count FROM goods_list WHERE goods_name LIKE '%${searchtext}%' ${situation}`
-  let [err1, result1] = await db.query(sql1)
-  // add result to the data
-  let count = result1[0].count
-  let totalPage = Math.ceil(count / length)
-  page = Number(page)
-  let data = {
-    count,
-    totalPage,
-    page,
-    result
-  }
-  // judge searchtext, if it exists in the search table, count++
-  // else insert a new data
-  let sql2 = `SELECT * FROM search WHERE search_text = '${searchtext}'`
-  let [err2, result2] = await db.query(sql2)
-  // console.log(result2);
-  if (result2.length == 0) {
-    // insert new value
-    // console.log('insert new value');
-    let sql3 = `INSERT INTO search(search_text, count) VALUES('${searchtext}', 1)`
-    let [err3] = await db.query(sql3)
-  } else {
-    // console.log('update count');
-    // update count
-    let searchCount = result2[0].count + 1;
-    // update count in search table
-    let sql4 = `UPDATE search SET count = ${searchCount} WHERE search_text = '${searchtext}'`
-    let [err4] = await db.query(sql4)
-  }
   if (!err) {
-    res.send(getMsg('Search by user success', 200, data))
+    let sql1 = `SELECT COUNT(*) AS count FROM goods_list WHERE goods_name LIKE '%${searchtext}%' ${situation}`
+    let [err1, result1] = await db.query(sql1)
+    // add result to the data
+    if (!err1) {
+      let count = result1[0].count
+      let totalPage = Math.ceil(count / length)
+      page = Number(page)
+      let data = {
+        count,
+        totalPage,
+        page,
+        result
+      }
+      // judge searchtext, if it exists in the search table, count++
+      // else insert a new data
+      let sql2 = `SELECT * FROM search WHERE search_text = '${searchtext}'`
+      let [err2, result2] = await db.query(sql2)
+      // console.log(result2);
+      if (result2.length == 0) {
+        // insert new value
+        // console.log('insert new value');
+        let sql3 = `INSERT INTO search(search_text, count) VALUES('${searchtext}', 1)`
+        let [err3] = await db.query(sql3)
+      } else {
+        // console.log('update count');
+        // update count
+        let searchCount = result2[0].count + 1;
+        // update count in search table
+        let sql4 = `UPDATE search SET count = ${searchCount} WHERE search_text = '${searchtext}'`
+        let [err4] = await db.query(sql4)
+      }
+      res.send(getMsg('Search by user success', 200, data))
+    } else {
+      next('Search by user failure')
+    }
   } else {
     next('Search by user failure')
   }
