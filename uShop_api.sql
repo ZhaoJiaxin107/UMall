@@ -143,6 +143,9 @@ SELECT * FROM search;
 SELECT * FROM goods_list;
 INSERT INTO search(search_text, count) VALUES('咖啡', 5);
 
+use u_shopping;
+SELECT * FROM member;
+
 
 SELECT * FROM member;
 

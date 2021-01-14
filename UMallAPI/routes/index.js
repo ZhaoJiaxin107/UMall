@@ -23,17 +23,18 @@ router.get('/hotsearch', async (req, res, next) => {
 })
 // search by user
 router.get('/searchbyuser', async (req, res, next) => {
-  // receive parameters and id(third_id) is necessary
+  // receive parameters and search text is necessary
   let { searchtext = '', page = 1, length = 5, orderby = 1 } = req.query
   let start = (page - 1) * length
-  let orderStr = "", sort = "";
+  let orderStr = '', sort = '', situation = '';
   // judge situation by orderby parameters
   switch (orderby) {
     case "1":
       orderStr = `ORDER BY rand()`
       break;
     case "2":
-      orderStr = `AND new_status = 1 ORDER BY rand()`
+      situation = `AND new_status = 1`
+      orderStr = `ORDER BY rand()`
       break;
     case "3":
       orderStr = `ORDER BY goods_price`
@@ -49,16 +50,17 @@ router.get('/searchbyuser', async (req, res, next) => {
              goods_introduce,goods_manufacturer, 
              goods_price, assem_price, new_status
              FROM goods_list WHERE goods_name LIKE '%${searchtext}%'
-             ${orderStr} ${sort}
+             ${situation} ${orderStr} ${sort}
              LIMIT ${start}, ${length}`
   let [err, result] = await db.query(sql)
   // calculate the count of product and total page, add to the result
   // query for the count of one product
-  let sql1 = `SELECT COUNT(*) AS count FROM goods_list WHERE goods_name LIKE '%${searchtext}%'`
+  let sql1 = `SELECT COUNT(*) AS count FROM goods_list WHERE goods_name LIKE '%${searchtext}%' ${situation}`
   let [err1, result1] = await db.query(sql1)
   // add result to the data
   let count = result1[0].count
   let totalPage = Math.ceil(count / length)
+  page = Number(page)
   let data = {
     count,
     totalPage,
@@ -98,9 +100,9 @@ router.get("/banner", async (req, res, next) => {
   let [err, result] = await db.query(sql)
 
   if (!err) {
-    res.send(getMsg("banner success", 200, result))
+    res.send(getMsg("Banner success", 200, result))
   } else {
-    next("banner failure")  // 当调用这个的next的时候，程序会去寻找具有4个参数的中间件err,,,next
+    next("Banner failure")  // 当调用这个的next的时候，程序会去寻找具有4个参数的中间件err,,,next
   }
 })
 
@@ -109,9 +111,9 @@ router.get("/firstcategory", async (req, res, next) => {
   let sql = `SELECT * FROM category_first`
   let [err, result] = await db.query(sql)
   if (!err) {
-    res.send(getMsg("first category success", 200, result))
+    res.send(getMsg("First category success", 200, result))
   } else {
-    next("first category failure")
+    next("First category failure")
   }
 })
 // flash sale
@@ -136,9 +138,9 @@ router.get('/flashsale', async (req, res, next) => {
   let [err1, result1] = await db.query(sql1)
   result[0].data = result1
   if (!err) {
-    res.send(getMsg('flash sale success', 200, result))
+    res.send(getMsg('Flash sale success', 200, result))
   } else {
-    next('flash sale failure')
+    next('Flash sale failure')
   }
   // res.send(result);
 })
@@ -158,9 +160,9 @@ router.get("/populargoods", async (req, res, next) => {
               LIMIT 8`
   let [err, result] = await db.query(sql)
   if (!err) {
-    res.send(getMsg("popular goods success", 200, result))
+    res.send(getMsg("Popular goods success", 200, result))
   } else {
-    next("popular goods failure")
+    next("Popular goods failure")
   }
 })
 // four plates

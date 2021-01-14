@@ -18,17 +18,18 @@ router.get('/hotsearch', async (req, res, next) => {
 })
 // search by user
 router.get('/searchbyuser', async (req, res, next) => {
-    // receive parameters and id(third_id) is necessary
-    let { searchtext='', page = 1, length = 5, orderby = 1 } = req.query
+    // receive parameters and search text is necessary
+    let { searchtext = '', page = 1, length = 5, orderby = 1 } = req.query
     let start = (page - 1) * length
-    let orderStr = "", sort = "";
+    let orderStr = '', sort = '', situation = '';
     // judge situation by orderby parameters
     switch (orderby) {
         case "1":
             orderStr = `ORDER BY rand()`
             break;
         case "2":
-            orderStr = `AND new_status = 1 ORDER BY rand()`
+            situation = `AND new_status = 1`
+            orderStr = `ORDER BY rand()`
             break;
         case "3":
             orderStr = `ORDER BY goods_price`
@@ -44,16 +45,17 @@ router.get('/searchbyuser', async (req, res, next) => {
                goods_introduce,goods_manufacturer, 
                goods_price, assem_price, new_status
                FROM goods_list WHERE goods_name LIKE '%${searchtext}%'
-               ${orderStr} ${sort}
+               ${situation} ${orderStr} ${sort}
                LIMIT ${start}, ${length}`
     let [err, result] = await db.query(sql)
     // calculate the count of product and total page, add to the result
     // query for the count of one product
-    let sql1 = `SELECT COUNT(*) AS count FROM goods_list WHERE goods_name LIKE '%${searchtext}%'`
+    let sql1 = `SELECT COUNT(*) AS count FROM goods_list WHERE goods_name LIKE '%${searchtext}%' ${situation}`
     let [err1, result1] = await db.query(sql1)
     // add result to the data
     let count = result1[0].count
     let totalPage = Math.ceil(count / length)
+    page = Number(page)
     let data = {
         count,
         totalPage,
@@ -65,12 +67,12 @@ router.get('/searchbyuser', async (req, res, next) => {
     let sql2 = `SELECT * FROM search WHERE search_text = '${searchtext}'`
     let [err2, result2] = await db.query(sql2)
     // console.log(result2);
-    if(result2.length == 0){
+    if (result2.length == 0) {
         // insert new value
         // console.log('insert new value');
         let sql3 = `INSERT INTO search(search_text, count) VALUES('${searchtext}', 1)`
         let [err3] = await db.query(sql3)
-    }else{
+    } else {
         // console.log('update count');
         // update count
         let searchCount = result2[0].count + 1;
@@ -142,14 +144,15 @@ router.get('/goodslist', async (req, res, next) => {
     // receive parameters and id(third_id) is necessary
     let { id: third_id, page = 1, length = 5, orderby = 1 } = req.query
     let start = (page - 1) * length
-    let orderStr = "", sort = "";
+    let orderStr = '', sort = '', situation = '';
     // judge situation by orderby parameters
     switch (orderby) {
         case "1":
             orderStr = `ORDER BY rand()`
             break;
         case "2":
-            orderStr = `AND new_status = 1 ORDER BY rand()`
+            situation = `AND new_status = 1`
+            orderStr = `ORDER BY rand()`
             break;
         case "3":
             orderStr = `ORDER BY goods_price`
@@ -165,15 +168,16 @@ router.get('/goodslist', async (req, res, next) => {
                goods_introduce,goods_manufacturer, 
                goods_price, assem_price, new_status
                FROM goods_list WHERE third_id = ${third_id} 
-               ${orderStr} ${sort}
+               ${situation} ${orderStr} ${sort}
                LIMIT ${start}, ${length}`
     let [err, result] = await db.query(sql)
     // calculate the count of product and total page, add to the result
     // query for the count of one product
-    let sql1 = `SELECT COUNT(*) AS count FROM goods_list WHERE third_id = ${third_id}`
+    let sql1 = `SELECT COUNT(*) AS count FROM goods_list WHERE third_id = ${third_id} ${situation}`
     let [err1, result1] = await db.query(sql1)
     // add result to the data
     let count = result1[0].count
+    page = Number(page)
     let totalPage = Math.ceil(count / length)
     let data = {
         count,
@@ -187,72 +191,6 @@ router.get('/goodslist', async (req, res, next) => {
         next('Goods list failure')
     }
 })
-// goodlist, consider paging: search by router
-/* router.get('/goodslist/:id', async (req, res, next) => {
-    // get id, sort by different situation
-    let id = req.params.id;
-    // get product based on third_id
-    let third_id = req.query.id
-    // pagination
-    let { page = 1, length = 5 } = req.query
-    let start = (page - 1) * length;
-    let sql;
-    switch (id) {
-        case 'comprehensive':
-            sql = `SELECT id, goods_id, 
-            third_id, goods_name, 
-            CONCAT("${url}", image_url) AS image_url, 
-            goods_introduce,goods_manufacturer, 
-            goods_price, assem_price, new_status
-            FROM goods_list WHERE third_id = ${third_id} 
-            ORDER BY rand() LIMIT ${start}, ${length}`
-            break;
-        case 'newproduct':
-            sql = `SELECT id, goods_id, 
-                third_id, goods_name, 
-                CONCAT("${url}", image_url) AS image_url, 
-                goods_introduce,goods_manufacturer, 
-                goods_price, assem_price, new_status
-                FROM goods_list WHERE third_id = ${third_id} 
-                AND new_status = 1
-                ORDER BY rand() LIMIT ${start}, ${length}`;
-            break;
-        case 'goodsprice':
-            sql = `SELECT id, goods_id, 
-                third_id, goods_name, 
-                CONCAT("${url}", image_url) AS image_url, 
-                goods_introduce,goods_manufacturer, 
-                goods_price, assem_price, new_status
-                FROM goods_list WHERE third_id = ${third_id} 
-                ORDER BY goods_price ASC 
-                LIMIT ${start}, ${length}`;
-            break;
-        default:
-            sql = `SELECT id, goods_id, 
-            third_id, goods_name, 
-            CONCAT("${url}", image_url) AS image_url, 
-            goods_introduce,goods_manufacturer, 
-            goods_price, assem_price, new_status
-            FROM goods_list WHERE third_id = ${third_id} 
-            ORDER BY rand() LIMIT ${start}, ${length}`
-            break;
-    }
-    let [err, result] = await db.query(sql);
-    // Query for count and total page
-    let sql1 = `SELECT COUNT(*) AS count FROM goods_list WHERE third_id = ${third_id}`;
-    let [err1, result1] = await db.query(sql1)
-    let data = {
-        count: result1[0].count,
-        totalPage: Math.ceil(result1[0].count / length),
-        curPage: page,
-        result
-    }
-    if (!err) {
-        res.send(getMsg('Goods list success', 200, data))
-    } else {
-        next('Goods list failure')
-    }
-}) */
 /* 
 {
     "msg": "success",
