@@ -143,7 +143,7 @@ router.get('/flashsale', async (req, res, next) => {
               LIMIT 4`
     let [err1, result1] = await db.query(sql1)
     if (!err1 && result1.length > 0) {
-      result[0].data = result1
+      result[0].goods = result1
       res.send(getMsg('Flash sale success', 200, result))
     } else {
       next('Flash sale failure')
