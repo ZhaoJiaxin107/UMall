@@ -116,7 +116,7 @@ router.post('/login', async (req, res, next) => {
 })
 
 // 当访问个人中心的时候，前端需要传过来一个标识，
-// 标识着用户有没有登陆，如果有登陆，那么允许访问，
+// 标识着用户有没有登录，如果有登录，那么允许访问，
 // 如果没有登录，就提示用户先登录
 router.get('/personal', async (req, res, next) => {
     // console.log(getToken(req.headers.authorization))
