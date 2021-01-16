@@ -1,7 +1,7 @@
 # UMall
 A backend design using Node.js for an online shopping mall 
 
-### Basic operation of development project:
+### Basic operation of development project
 
 - Modularization: good maintenance and encapsulation of public code
 
@@ -47,7 +47,6 @@ Express -- view = EJS UMallAPI
 //Express uses the express framework
 
 //view = EJS use the view template EJS
-
 ```
 * Download dependency package
 
